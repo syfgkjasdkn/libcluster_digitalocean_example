@@ -1,0 +1,39 @@
+#! /usr/bin/env bash
+
+# assumes ubuntu 18.04
+
+set +e
+
+_unpack_and_start_app() {
+  mkdir -p /opt/example
+  tar -xzf /tmp/export/example.tar.gz -C /opt/example
+  cp /opt/example/etc/example.service /etc/systemd/system/
+  systemctl enable example
+  systemctl start example
+}
+
+# _setup_utf8_locale() {
+#   locale-gen "en_US.UTF-8"
+#   dpkg-reconfigure locales
+#   update-locale LC_ALL=en_US.UTF-8 LANG=en_US.UTF-8
+#   echo 'LC_ALL=en_US.UTF-8' | tee -a /etc/environment
+#   echo 'LANG=en_US.UTF-8' | tee -a /etc/environment
+# }
+
+# _setup_firewall() {
+#   ufw allow OpenSSH
+#   ufw limit ssh/tcp
+#   ufw allow 80/tcp # our app's web interface
+#   ufw allow 4369/tcp # epmd # TODO limit
+#   ufw allow 4370/tcp # distributed erlang # TODO limit
+#   ufw default allow outgoing
+#   ufw --force enable
+# }
+
+main() {
+  _unpack_and_start_app
+  # _setup_utf8_locale
+  # _setup_firewall
+}
+
+main

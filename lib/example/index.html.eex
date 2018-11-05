@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>nodes</title>
+</head>
+<body>
+  <code>Connected nodes:</code>
+  <code id="nodes"></code>
+  <script>
+  var nodesContainer = document.getElementById("nodes")
+  var ws = new WebSocket("ws://" + window.location.host + "/nodes");
+  var nodes = [];
+
+  function render(nodes) {
+    return nodes
+      .map(node => "<p>" + node + "</p>")
+      .join("\n")
+  }
+
+  ws.onopen = function (event) { ws.send("list"); };
+  ws.onmessage = function (event) {
+    console.log(event.data);
+    var msg = JSON.parse(event.data)
+    switch (msg.type) {
+      case "list":
+        nodes = msg.payload.nodes.sort();
+        break;
+      case "connected":
+        if (nodes.indexOf(msg.payload.node) === -1) {
+          nodes.push(msg.payload.node);
+          nodes.sort();
+        }
+        break;
+      case "disconnected":
+        nodes.splice(nodes.indexOf(msg.payload.node), 1)
+        break; 
+    }
+    nodesContainer.innerHTML = render(nodes);
+  }
+  </script>
+</body>
+</html>

@@ -1,0 +1,2 @@
+-name <%= release_name %>@${HOST_IPV4}
+-setcookie <%= release.profile.cookie %>

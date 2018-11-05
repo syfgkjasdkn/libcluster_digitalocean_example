@@ -1,0 +1,27 @@
+#! /usr/bin/env bash
+
+set +e
+
+# builds the otp app release in a docker container running ubuntu
+# the tarred release is then copied from the container to `export` dir
+# thus making the release available for later use outside of the container
+_build() {
+  docker build . \
+    --build-arg DO_TOKEN=${DIGITALOCEAN_TOKEN} \
+    -t libcluster_example && \
+  docker run -v "$(pwd)"/export:/export --rm libcluster_example
+}
+
+_upload() {
+  if [ -z "$REMOTE_HOST" ] ; then
+    echo "Need REMOTE_HOST to be set"
+    exit 1
+  fi
+
+  scp -i ~/.ssh/sas export/example.tar.gz root@${REMOTE_HOST}:/tmp/
+}
+
+case $1 in
+  build ) _build ;;
+  upload ) _upload ;;
+esac

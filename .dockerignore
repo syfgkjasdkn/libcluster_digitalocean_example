@@ -1,0 +1,10 @@
+/_build/
+/cover/
+/deps/
+/doc/
+/.fetch
+erl_crash.dump
+*.ez
+libcluster_digitalocean_example-*.tar
+/export/
+.DS_Store

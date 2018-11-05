@@ -1,0 +1,19 @@
+[Unit]
+Description=just an app service for the demo
+Requires=network.target
+
+[Service]
+Type=simple
+User=root
+StandardOutput=journal
+StandardError=journal
+Restart=on-failure
+RestartSec=5
+WorkingDirectory=/opt/example
+ExecStart=/opt/example/bin/example foreground
+RemainAfterExit=no
+TimeoutStopSec=60
+KillMode=process
+
+[Install]
+WantedBy=multi-user.target

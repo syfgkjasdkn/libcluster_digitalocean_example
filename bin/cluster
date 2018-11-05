@@ -1,0 +1,36 @@
+#! /usr/bin/env bash
+
+set +e
+
+_apply() {
+  if [ -z "$DIGITALOCEAN_TOKEN" ] ; then
+    echo "Please set DIGITALOCEAN_TOKEN to a valid digital ocean api token"
+    exit 1
+  fi
+
+  if [ -z "$PRIVATE_KEY_PATH" ] ; then
+    echo "Please set PRIVATE_KEY_PATH to a valid path to a private key you want to use"
+    exit 1
+  fi
+
+  if [ -z "$PUBLIC_KEY_PATH" ] ; then
+    echo "Please set PUBLIC_KEY_PATH to a valid path to a public key you want to use"
+    exit 1
+  fi
+
+  PUBLIC_KEY_FINGERPRINT=$(
+    ssh-keygen -E md5 -lf ${PUBLIC_KEY_PATH} \
+      | awk '{print $2}' \
+      | sed 's/MD5://'
+  )
+
+  cd terraform && terraform apply \
+    -var do_token=${DIGITALOCEAN_TOKEN} \
+    -var public_key_path=${PUBLIC_KEY_PATH} \
+    -var public_key_fingerprint=${PUBLIC_KEY_FINGERPRINT} \
+    -var private_key_path=${PRIVATE_KEY_PATH}
+}
+
+case $1 in
+  apply ) _apply ;;
+esac
